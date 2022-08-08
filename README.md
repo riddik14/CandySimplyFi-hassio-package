@@ -1,4 +1,4 @@
-# CandySimplyFi hassio package
+# CandySimplyFi hassio package 
 
 
 based on https://github.com/jezcooke/haier_appdaemon/blob/main/checkappliance.py
@@ -53,3 +53,4 @@ ci sono anche automazioni di esempio ma va configurato il servizio di notifica.
 
 io ho usato questo https://hassiohelp.eu/2020/11/09/centro-notifiche-3-0-appdaemon/
 
+https://camo.githubusercontent.com/9b2ecad5985da7742d9bca779b2d69cc35c286635c68d44b549fa978869fa2f8/68747470733a2f2f63646e2e6275796d6561636f666665652e636f6d2f627574746f6e732f617269616c2d626c61636b2e706e67
