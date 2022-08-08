@@ -1,0 +1,103 @@
+type: vertical-stack
+cards:
+  - type: entities
+    entities:
+      - entity: sensor.candy_wifi
+      - entity: sensor.programma_attuale_lavatrice
+      - entity: sensor.giri_motore_lavatrice
+      - entity: sensor.temperatura_attuale_lavatrice
+      - entity: sensor.temperatura_impostata_lavatrice
+      - entity: sensor.vapore
+      - entity: sensor.livello_sporco
+      - type: divider
+      - entity: sensor.prelavaggio
+      - entity: sensor.igiene
+      - entity: sensor.antipiega
+      - entity: sensor.buonanotte
+      - entity: sensor.risciaquo
+      - entity: sensor.acquaplus
+      - entity: sensor.opt9
+      - type: divider
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: DelVal
+        name: Ritardo Avvio
+      - type: divider
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: Err
+        name: ERRORI
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: WiFiStatus
+        name: Controllo Remoto
+      - type: divider
+      - type: divider
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: DryT
+        name: DryT
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: RecipeId
+        name: RecipeId
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: FillR
+        name: FillR
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: DisTestOn
+        name: DisTestOn
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: DisTestRes
+        name: DisTestRes
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: CheckUpState
+        name: CheckUpState
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: T0W
+        name: T0W
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: TIW
+        name: TIW
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: T0R
+        name: T0R
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: numF
+        name: numF
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: unbF
+        name: unbF
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: unbC
+        name: unbC
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: NtcW
+        name: NtcW
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: NtcD
+        name: NtcD
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: APSoff
+        name: APSoff
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: APSfreq
+        name: APSfreq
+      - type: attribute
+        entity: sensor.candy_wifi
+        attribute: chartL
+        name: chartL
