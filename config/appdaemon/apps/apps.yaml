@@ -1,0 +1,6 @@
+#add this to your file
+candy_washing_machine:
+  module: candy-washing-machine
+  class: CandyWashingMachine
+  encryption_key: "xxxxxxxxxxxxx"
+  appliance_host: "192.168.1.127"
