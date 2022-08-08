@@ -53,4 +53,9 @@ ci sono anche automazioni di esempio ma va configurato il servizio di notifica.
 
 io ho usato questo https://hassiohelp.eu/2020/11/09/centro-notifiche-3-0-appdaemon/
 
-https://camo.githubusercontent.com/9b2ecad5985da7742d9bca779b2d69cc35c286635c68d44b549fa978869fa2f8/68747470733a2f2f63646e2e6275796d6561636f666665652e636f6d2f627574746f6e732f617269616c2d626c61636b2e706e67
+<a href="https://www.buymeacoffee.com/T1Pqksy" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/arial-black.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
+
+------------------------------------
+
+
+Se il progetto ti è piaciuto clicca <a href="https://www.paypal.me/DomenicoCeccarelli">qui</a> per offrirmi un caffè
