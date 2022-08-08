@@ -96,6 +96,8 @@ sensor:
                 COTONE PERFETTO / IGIENE PLUS 59
             {%- elif state_attr("sensor.candy_wifi", "PrCode") == '5' -%}
                 SPORT PLUS 39 MINUTI
+            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '35'  -%}
+                RISCIACQUI
             {%- elif state_attr("sensor.candy_wifi", "PrCode") == '6' -%}
                 DELICATI 59 MINUTI
             {%- elif state_attr("sensor.candy_wifi", "PrCode") == '7' -%}
@@ -182,16 +184,16 @@ sensor:
             {%- else -%}
                 OFF
             {%- endif %}
-       risciaquo:      
+       risciacquo:      
           friendly_name: "Extra Risciacquo"
           #icon_template: mdi:stove
           value_template: >-            
             {%- if state_attr('sensor.candy_wifi', 'Opt5') == '1' -%}
-                1 RISCIAQUO
+                1 RISCIACQUO
             {%- elif state_attr('sensor.candy_wifi', 'Opt6') == '1 ' -%}
-                2 RISCIAQUI
+                2 RISCIACQUI
             {%- elif state_attr('sensor.candy_wifi', 'Opt7') == '1'  -%}
-                3 RISCIAQUI
+                3 RISCIACQUI
             {%- else -%}
                 OFF
             {%- endif %}
