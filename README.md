@@ -1,4 +1,4 @@
-# CandySimplyFi hassio package 
+# CandySimplyFi hassio appdaemon + automations 
 
 
 based on https://github.com/jezcooke/haier_appdaemon/blob/main/checkappliance.py
