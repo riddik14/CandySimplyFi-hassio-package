@@ -6,27 +6,6 @@ cards:
         icon: mdi:calendar
       - entity: sensor.candy_wifi
         icon: mdi:washing-machine
-      - entity: sensor.giri_motore_lavatrice
-        icon: mdi:engine
-      - entity: sensor.temperatura_attuale_lavatrice
-        secondary_info: none
-      - entity: sensor.temperatura_impostata_lavatrice
-      - entity: sensor.vapore
-        icon: mdi:cloud-print
-      - entity: sensor.livello_sporco
-        icon: mdi:waves-arrow-up
-      - type: divider
-      - entity: sensor.prelavaggio
-        icon: mdi:hand-wash
-      - entity: sensor.igiene
-        icon: mdi:alert-plus
-      - entity: sensor.antipiega
-      - entity: sensor.buonanotte
-        icon: mdi:weather-night
-      - entity: sensor.risciacquo
-        icon: mdi:car-brake-fluid-level
-      - entity: sensor.acquaplus
-      - entity: sensor.opt9
       - type: divider
       - type: attribute
         entity: sensor.candy_wifi
