@@ -11,14 +11,15 @@ homeassistant:
         haaska_hidden: false
         homebridge_hidden: false
 automation:
-  - alias: avviso Programma lavatrice
+  - alias: avviso avvio ritardato lavatrice
     description: ''
     trigger:
-    - platform: state
+    trigger:
+    - platform: numeric_state
       entity_id:
       - sensor.candy_wifi
-      from: 'off'
-      to: 'on'
+      attribute: DelVal
+      above: '1'
     condition: []
     action:
     - delay:
@@ -26,34 +27,69 @@ automation:
         minutes: 0
         seconds: 5
         milliseconds: 0
-    - service: script.my_notify 
+    - service: script.my_notify
       data_template:
         call_no_annuncio: 1
         alexa: 1
+        google: 0
         title: Lavatrice
-        message: "hai selezionato il Programma  {{ states.sensor.programma_attuale.state
-          }} ,  avvio il ciclo di lavaggio, con temperatura a {{ (states.sensor.candy_wifi.attributes.Temp
-          ) }} gradi, con centrifuga a {{ (states.sensor.candy_wifi.attributes.SpinSp
-          | int*100) }} giri tempo Previsto alla fine {{ (( states.sensor.candy_wifi.attributes.RemTime)
-          | float(0) / 60 ) |round(0) }} minuti ritardo avvio impostato {{ (states.sensor.candy_wifi.attributes.DelVal)
-          \  }} minuti\n   \n \n"
+        message:        
+                         la lavatrice si avvierà tra {{((states.sensor.candy_wifi.attributes.RemTime | int(0)) / 60) | round(0) }} di minuti. 
+                        hai selezionato il Programma  {{ states.sensor.candy_wifi_programma.state }} ,  
+                        avvio il ciclo di lavaggio, con temperatura a {{ (states.sensor.candy_wifi_temp.state) }} gradi, 
+                        con centrifuga a {{ (states.sensor.candy_wifi_centrifuga.state) }} giri 
+                 
+    mode: single
+  - alias: avviso Programma lavatrice
+    description: ''
+    trigger:
+    trigger:
+    - platform: state
+      entity_id:
+      - sensor.candy_wifi
+      attribute: MachMd
+      from: '1'
+      to: '2'
+    condition: []
+    action:
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 5
+        milliseconds: 0
+    - service: script.my_notify
+      data_template:
+        call_no_annuncio: 1
+        alexa: 1
+        google: 0
+        title: Lavatrice
+        message: >
+                  {% if  ((states.sensor.candy_wifi.attributes.DelVal) | int(0) > 0) %}
+          
+                       "ritardo avvio impostato {{ (states.sensor.candy_wifi.attributes.DelVal) }} di minuti. 
+                        hai selezionato il Programma  {{ states.sensor.candy_wifi_programma.state }} ,  
+                        avvio il ciclo di lavaggio, con temperatura a {{ (states.sensor.candy_wifi_temp.state) }}gradi, 
+                        con centrifuga a {{ (states.sensor.candy_wifi_centrifuga.state) }} giri "
+                  {% else %}
+                       "hai selezionato il Programma  {{ states.sensor.candy_wifi_programma.state }} ,  
+                        avvio il ciclo di lavaggio, con temperatura a {{ (states.sensor.candy_wifi_temp.state) }} gradi, 
+                        con centrifuga a {{ (states.sensor.candy_wifi_centrifuga.state) }} giri.
+                        tempo Previsto alla fine  {{ ( states.sensor.candy_wifi_termine_programma.attributes.Termine) }} minuti. "
+                  {% endif %}
     mode: single
   - alias: lavatrice inizio lavaggio
     description: ''
     trigger:
     - platform: state
-      entity_id: binary_sensor.sensore_lavatrice
-      from: 'off'
-      to: 'on'
+      entity_id:
+      - sensor.candy_wifi
+      attribute: MachMd
+      to: '2'
     condition: []
     action:
-    - data:
-        entity_id: media_player.tutti
-        message: la lavatrice ha iniziato un ciclo di lavaggio
-      service: tts.google_translate_say
     - service: notify.telegram
       data:
-        message: la lavatrice ha iniziato il ciclo di lavaggio alle ore {{ states.sensor.time_date.state
+        message: la lavatrice ha iniziato il ciclo di lavaggio alle ore {{ states.sensor.time.state
           }}
     mode: single
   - alias: lavatrice fine lavaggio
@@ -72,179 +108,13 @@ automation:
       service: tts.google_translate_say
     - service: notify.telegram
       data:
-        message: la lavatrice ha finito il ciclo di lavaggio alle ore {{ states.sensor.time_date.state
+        message: la lavatrice ha finito il ciclo di lavaggio alle ore {{ states.sensor.time.state
           }}
     - service: script.my_notify
       data_template:
         call_no_annuncio: 1
         alexa: 1
+        google: 0
         title: Lavatrice
         message: La lavatrice ha finito
     mode: single
-sensor:
-  - platform: template
-    sensors:
-       programma_attuale_lavatrice:
-          friendly_name: "Programma attuale"
-          #icon_template: mdi:stove
-          value_template: >-            
-            {%- if state_attr("sensor.candy_wifi", "PrCode") == '1'  -%}
-                SPECIAL 39 MINUTI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") == '2' -%}
-                MISTI & COLORATI 59  MINUTI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") == '3' -%}
-                COTONE PERFETTO / IGIENE PLUS 59
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") == '5' -%}
-                SPORT PLUS 39 MINUTI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '35'  -%}
-                RISCIACQUI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") == '6' -%}
-                DELICATI 59 MINUTI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") == '7' -%}
-                RAPIDO MINUTI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") == '8' -%}
-                RISCIACQUI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") == '10' -%}
-                LANA A MANO
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '11' -%}
-                SINTETICI E COLORATI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") == '12' -%}
-                LAVAGGIO 20°
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '13' -%}
-                ECO 40° - 60°
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '14'  -%}
-                COTONE
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '39'  -%}
-                RAPIDO 14 MINUTI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '71'  -%}
-                RAPIDO 30 MINUTI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '103'  -%}
-                RAPIDO 44 MINUTI
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '65'  -%}
-                SANIFICAZIONE MASCHERINE
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '135'  -%}
-                PETS
-            {%- elif state_attr("sensor.candy_wifi", "PrCode") ==  '41'  -%}
-                REFRESH
-            {%- else -%}
-                Standby
-            {%- endif %}
-
-       temperatura_impostata_lavatrice:
-          friendly_name: "Temperatura Impostata Lavatrice"
-          icon_template: mdi:thermometer
-          unit_of_measurement: "°C"
-          value_template: >- 
-           {{ ( states.sensor.candy_wifi.attributes.Temp ) }}       
-       temperatura_attuale_lavatrice:
-          friendly_name: "Temperatura Acqua Lavatrice"
-          icon_template: mdi:thermometer
-          unit_of_measurement: "°C"
-          value_template: >-
-            {{ ( states.sensor.candy_wifi.attributes.NtcW ) | int / 10 | round(0) }}
-       giri_motore_lavatrice:
-          friendly_name: "Motore Lavatrice"
-          unit_of_measurement: "rpm"
-          #icon_template: mdi:stove
-          value_template: >-
-            {{ ( states.sensor.candy_wifi.attributes.motS ) | int / 10 | round(0) }}
-       prelavaggio:
-          friendly_name: "Prelavaggio"
-          #icon_template: mdi:stove
-          value_template: >-
-            {%- if state_attr('sensor.candy_wifi', 'Opt1') == '1' -%}
-                ATTIVATO
-            {%- else -%}
-                OFF
-            {%- endif %}
-       igiene:
-          friendly_name: "Igiene + "
-          #icon_template: mdi:stove
-          value_template: >-
-            {%- if state_attr('sensor.candy_wifi', 'Opt2') == '1' -%}
-                ATTIVATO
-            {%- else -%}
-                OFF
-            {%- endif %}
-       antipiega:
-          friendly_name: "Anti Piega"
-          #icon_template: mdi:stove
-          value_template: >-
-            {%- if state_attr('sensor.candy_wifi', 'Opt3') == '1' -%}
-                ATTIVATO
-            {%- else -%}
-                OFF
-            {%- endif %}
-       buonanotte:
-          friendly_name: "Buona Notte"
-          #icon_template: mdi:stove
-          value_template: >-
-            {%- if state_attr('sensor.candy_wifi', 'Opt4') == '1' -%}
-                ATTIVATO
-            {%- else -%}
-                OFF
-            {%- endif %}
-       risciacquo:      
-          friendly_name: "Extra Risciacquo"
-          #icon_template: mdi:stove
-          value_template: >-            
-            {%- if state_attr('sensor.candy_wifi', 'Opt5') == '1' -%}
-                1 RISCIACQUO
-            {%- elif state_attr('sensor.candy_wifi', 'Opt6') == '1 ' -%}
-                2 RISCIACQUI
-            {%- elif state_attr('sensor.candy_wifi', 'Opt7') == '1'  -%}
-                3 RISCIACQUI
-            {%- else -%}
-                OFF
-            {%- endif %}
-       acquaplus:
-          friendly_name: "Acquaplus"
-          #icon_template: mdi:stove
-          value_template: >-
-            {%- if state_attr('sensor.candy_wifi', 'Opt8') == '1' -%}
-                ATTIVATO
-            {%- else -%}
-                OFF
-            {%- endif %}
-       opt9:
-          friendly_name: "Opt 9"
-          #icon_template: mdi:stove
-          value_template: >-
-            {%- if state_attr('sensor.candy_wifi', 'Opt9') == '1' -%}
-                ATTIVATO
-            {%- else -%}
-                OFF
-            {%- endif %}
-       vapore:
-          friendly_name: "Vapore"
-          #icon_template: mdi:stove
-          value_template: >-
-            {%- if state_attr('sensor.candy_wifi', 'Steam') == '1'-%}
-                BASSO
-            {%- elif state_attr('sensor.candy_wifi', 'Steam') == '2' -%}
-                MEDIO BASSO
-            {%- elif state_attr('sensor.candy_wifi', 'Steam') == '3' -%}
-                MEDIO
-            {%- elif state_attr('sensor.candy_wifi', 'Steam') == '4' -%}
-                MEDIO ALTO
-            {%- elif state_attr('sensor.candy_wifi', 'Steam') == '5' -%}
-                MASSIMO
-            {%- else -%}
-                OFF
-            {%- endif %}
-       livello_sporco:
-          friendly_name: "Livello Sporco"
-          #icon_template: mdi:stove
-          value_template: >-
-            {%- if state_attr('sensor.candy_wifi', 'SLevel') == '1' -%}
-                POCO
-            {%- elif state_attr('sensor.candy_wifi', 'SLevel') == '2 ' -%}
-                NORMALE
-            {%- elif state_attr('sensor.candy_wifi', 'SLevel') == '3'  -%}
-                MOLTO
-            {%- else -%}
-                OFF
-            {%- endif %}
-
-
-
