@@ -9,8 +9,8 @@ appliance_entity = "sensor.candy_wifi" # The name of the entity to use/create in
 status_root = "statusLavatrice"             # The root level JSON element returned by 'http-read'
 power_attribute = "MachMd"                  # The name of the JSON attribute that containes the power on/off state.
 stats_root = "statusCounters"               # The root level JSON element returned by 'http-getStatistics'
-polling_interval = 15                       # How frequently check for the latest status.
-request_timeout =  20                        # Request timeout should be less than the polling interval 
+polling_interval = 30                       # How frequently check for the latest status.
+request_timeout =  15                        # Request timeout should be less than the polling interval 
 
 
 
@@ -69,7 +69,7 @@ class CandyWashingMachine(hass.Hass):
             self.set_state(
                 entity_id,
                 state=end.isoformat(),
-                attributes={"friendly_name": "Candy Fine ","device_class": "timestamp","Minuti restanti": remaining_minutes, "icon": "mdi:av-timer"},
+                attributes={"friendly_name": "Candy Fine ","device_class": "timestamp","Termine": remaining_minutes, "icon": "mdi:av-timer"},
             )
         except Exception as e:
             self.log(f"error when getting status: {e}")
@@ -102,6 +102,8 @@ class CandyWashingMachine(hass.Hass):
         try:
             status = self.get_status()
             programm = int(status[status_root]["PrCode"])
+            rem = int(status[status_root]["RemTime"]) // 60
+            
             if programm == 136:
                 state_program = "SPECIAL 39 MINUTI"
             elif programm == 135:
@@ -114,8 +116,12 @@ class CandyWashingMachine(hass.Hass):
                 state_program = "SPORT PLUS 39 MINUTI"
             elif programm == 4:
                 state_program = "DELICATI 59 MINUTI"
-            elif programm == 7:
-                state_program = "RAPIDO 15/30/44 MINUTI"
+            elif programm == 7 and rem == 14:
+                state_program = "RAPIDO 14 MINUTI"
+            elif programm == 7 and rem == 30:
+                state_program = "RAPIDO 30 MINUTI"
+            elif programm == 7 and rem == 45:
+                state_program = "RAPIDO 45 MINUTI"
             elif programm == 39:
                 state_program = "RAPIDO 15 MINUTI"
             elif programm == 35:
@@ -133,7 +139,7 @@ class CandyWashingMachine(hass.Hass):
             elif programm == 65:
                 state_program = "COTONE"
             else:
-                state_program = "stanby" 
+                state_program = programm
             
             entity_id = appliance_entity + "_programma"
             self.set_state(entity_id, state=state_program, attributes = {"friendly_name": "Programma", "icon":"mdi:format-list-bulleted-type"})
@@ -188,7 +194,7 @@ class CandyWashingMachine(hass.Hass):
             elif error_code == 21:
                 state_error = "E21"
             else:
-                state_error = "NESSUNO"
+                state_error = "---"
             
             
             
@@ -217,11 +223,11 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_temp_interna"
             self.set_state(entity_id, state=temp1, attributes = {"friendly_name": "Temperatura attuale", "unit_of_measurement": "°C"})
         #    self.retry = 0
-
         except:
             pass
     ###############           
     ###############  
+#counter
         try:
             statusmv = self.get_stats()
             mov = int(statusmv[stats_root]["CounterMV"])
@@ -229,7 +235,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_countmove"
             self.set_state(entity_id, state=mov, attributes = {"friendly_name": "Conta Movimenti", "icon":"mdi:vibrate"})
         #    self.retry = 0
-
         except:
             pass
     ###############           
@@ -240,7 +245,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_riempimento"
             self.set_state(entity_id, state=fill, attributes = {"friendly_name": "Percentuale riempimento", "icon":"mdi:waves-arrow-up", "unit_of_measurement": "%"}) 
         #    self.retry = 0
-
         except:
             pass
     ###############    
@@ -251,7 +255,7 @@ class CandyWashingMachine(hass.Hass):
 
             entity_id = appliance_entity + "_centrifuga"
             self.set_state(entity_id, state=rpm, attributes = {"friendly_name": "Giri Centrifuga", "unit_of_measurement": "rpm", "icon":"mdi:sync"})
-        #    self.retry = 0
+            self.retry = 0
         except:
             pass
     ###############  
@@ -265,7 +269,6 @@ class CandyWashingMachine(hass.Hass):
             self.set_state(entity_id, state=value, 
                         attributes = {"friendly_name": "Giri Motore", "unit_of_measurement": "rpm", "icon": "mdi:engine"})
         #    self.retry = 0
-
         except:
             pass
 #prelavaggio
@@ -280,7 +283,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_opt1"
             self.set_state(entity_id, state=state, attributes = {"friendly_name": "Prelavaggio", "icon":"mdi:hand-wash"})
         #    self.retry = 0
-
         except:
             pass
     ###############     
@@ -296,7 +298,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_opt2"
             self.set_state(entity_id, state=state, attributes = {"friendly_name": "Igiene +", "icon":"mdi:hospital-box"})
         #    self.retry = 0
-
         except:
             pass
     ###############  
@@ -312,7 +313,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_opt3"
             self.set_state(entity_id, state=state, attributes = {"friendly_name": "Antipiega", "icon":"mdi:tshirt-v"})
         #    self.retry = 0
-
         except:
             pass
     ###############            
@@ -328,7 +328,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_opt4"
             self.set_state(entity_id, state=state, attributes = {"friendly_name": "Buonanotte", "icon":"mdi:weather-night"})
         #    self.retry = 0
-
         except:
             pass
 #acqplus
@@ -343,7 +342,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_opt8"
             self.set_state(entity_id, state=state, attributes = {"friendly_name": "Acquaplus", "icon":"mdi:water-plus"})
         #    self.retry = 0
-
         except:
             pass
     ###############     
@@ -357,9 +355,8 @@ class CandyWashingMachine(hass.Hass):
                 state = "OFF"
 
             entity_id = appliance_entity + "_opt9"
-            self.set_state( entity_id, state=state, attributes = {"friendly_name": "Opzione 9"})
+            self.set_state( entity_id, state=state, attributes = {"friendly_name": "Opzione 9 sconosciuta"})
         #    self.retry = 0
-
         except:
             pass   
 #vapore
@@ -382,7 +379,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_vapore"
             self.set_state( entity_id, state=state, attributes = {"friendly_name": "Vapore", "icon":"mdi:cloud-outline"})
         #    self.retry = 0
-
         except:
             pass
 #stato lavaggio
@@ -416,7 +412,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_stato_lavatrice"
             self.set_state( entity_id, state=statemd, attributes = {"friendly_name": "Candy Stato", "icon":"mdi:washing-machine"})
             self.retry = 0
-
         except:
             pass
 #livello sporco
@@ -435,7 +430,6 @@ class CandyWashingMachine(hass.Hass):
 
             entity_id = appliance_entity + "_livello_sporco"
             self.set_state( entity_id, state=statesp, attributes = {"friendly_name": "Livello di Sporco", "icon":"mdi:car-brake-fluid-level"})
-
         except:
             pass
 #controllo remoto
@@ -474,7 +468,6 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_filtro"
             self.set_state(entity_id, state=statefiltro, 
                         attributes = {"friendly_name": "Filtro", "Intasamento": totalef , "icon":"mdi:air-filter"})
-
         except:
             pass
 #filtro calcare
@@ -496,10 +489,8 @@ class CandyWashingMachine(hass.Hass):
                 
             entity_id = appliance_entity + "_filtro_calcare"
             self.set_state(entity_id, state=statefiltroc, attributes = {"friendly_name": "Filtro Calcare", "Livello": filtro_lav_c , "icon":"mdi:air-filter"})
-
         except:
             pass
-                
 ####################################
 #risciacquo
         try:
@@ -523,7 +514,6 @@ class CandyWashingMachine(hass.Hass):
 
         except:
             pass
-                
 ####################################
 #diagnosi
         try:
@@ -543,22 +533,10 @@ class CandyWashingMachine(hass.Hass):
             entity_id = appliance_entity + "_diagnosi"
             self.set_state( entity_id, state=state_risc, attributes = {"friendly_name": "Diagnosi", "icon":"mdi:medical-bag"})
             self.retry = 0
-
         except:
             pass
 ##################################
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
-###########################################################################
-#########################################
 ##################################
-#########################################
     def get_status(self):
         return self.get_data("read")
 
